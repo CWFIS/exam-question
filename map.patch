@@ -1,0 +1,48 @@
+diff --git a/q2.html b/q2.html
+index b049c51..96719e4 100644
+--- a/q2.html
++++ b/q2.html
+@@ -29,16 +29,30 @@
+             .then(data => {
+                 L.geoJSON(data.features, {
+                     style: function (feature) {
+-                        var options = {
+-                            color: '#FF0000',
+-                            weight: 2,
+-                            fillOpacity: 0.5
++                        // Only display fires originating in Alberta
++                        if (feature.properties.province === 'AB') {
++                            var options = {
++                                color: '#FF0000',
++                                weight: 2,
++                                // Set fillOpacity based on hectares
++                                fillOpacity: feature.properties.hectares < 1 || feature.properties.hectares === null ? 0 : (feature.properties.hectares > 1000 ? 1 : 0.5)
++                            }
++                            return options;
++                        } else {
++                            return {
++                                // Hide fires not originating in Alberta
++                                opacity: 0,
++                                fillOpacity: 0
++                            };
+                         }
+-                        return options;
+                     },
+                     onEachFeature: function (feature, layer) {
++                        var formattedDate = new Date(feature.properties.date);
+                         var popupContent = "<p>"
+-                            + "Size: " + feature.properties.hectares + "<br/>"
++                            + "Fire Name: " + feature.properties.fire_name + "<br/>"
++                            + "Stage of Control: " + feature.properties.stage_control + "<br/>"
++                            // Format start date as "Month Day, Year"
++                            + "Start Date: " + formattedDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
+                     },
+@@ -50,4 +64,4 @@
+     </script>
+ </body>
+ 
+-</html>
+\ No newline at end of file
++</html>
