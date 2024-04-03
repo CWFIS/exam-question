@@ -28,11 +28,13 @@
             .then(response => response.json())
             .then(data => {
                 L.geoJSON(data.features, {
-                    style: function (feature) {
-                        var options = {
-                            color: '#FF0000',
-                            weight: 2,
-                            fillOpacity: 0.5
+                      style: function (feature) {
+                         var hectares = feature.properties.hectares;
+
+                         var options = {
+                         color: '#FF0000',
+                         weight: 2,
+                         fillOpacity: (hectares >= 1 && hectares <= 1000) ? 0.5 : (hectares < 1 || hectares === null) ? 0 : 1 
                         }
                         return options;
                     },
