@@ -18,27 +18,52 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
     <script>
-        var map = L.map('mapid').setView([55, -113], 5);
+        var map = L.map('mapid').setView([55, -113], 5); // set the first view location
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         }).addTo(map);
+        // This is a Leaflet function to create a tile layer to a web map, 
+        // that cover the entire map and are loaded only for the visible portion and zoom level, 
+        // which makes the map efficient to load and navigate.
+ 
 
+        // from the link, we could see what are included in the dataset
+        // step1: from the dataset, I see that the agency related to the Provinece, we should set agency to be ab
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
-                L.geoJSON(data.features, {
+                // step 3, the initail color is same for all fire
+                // we should chnge the fillopacity based on the hectares
+                L.geoJSON(data.features.filter(feature => feature.properties.agency === "ab"), {
                     style: function (feature) {
+                        var opacity;
+                        if (feature.properties.hectares<1 || feature.properties.hectares==null) {
+                            opacity = 0;
+                        } else if (feature.properties.hectares>1000){
+                            opacity = 1;
+                        } else {
+                            opacity = 0.5;
+                        }
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: opacity
                         }
                         return options;
                     },
+
+                    // Step2: the initail map only display size // we should add more based on this
+                    // and the format of startdate (2024-02-23T20:06:00Z)is different with the requirment
+                    // we should change the format
                     onEachFeature: function (feature, layer) {
+                        var startDate = new Date(feature.properties.startdate);
+                        var formattedDate = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                         var popupContent = "<p>"
-                            + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Size: " + (feature.properties.hectares || "N/A" ) + "<br/>"
+                            + "Fire Name: " + (feature.properties.firename || "N/A") + "<br/>"
+                            + "Stage of Control: " + (feature.properties.stage_of_control || "N/A") + "<br/>"
+                            + "Start date: " + formattedDate + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
