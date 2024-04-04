@@ -42,9 +42,18 @@
                         }
                         return options;
                     },
+
+                    // Step2: the initail map only display size // we should add more based on this
+                    // and the format of startdate (2024-02-23T20:06:00Z)is different with the requirment
+                    // we should change the format
                     onEachFeature: function (feature, layer) {
+                        var startDate = new Date(feature.properties.startdate);
+                        var formattedDate = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                         var popupContent = "<p>"
-                            + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Size: " + (feature.properties.hectares || "N/A" ) + "<br/>"
+                            + "Fire Name: " + (feature.properties.firename || "N/A") + "<br/>"
+                            + "Stage of Control: " + (feature.properties.stage_of_control || "N/A") + "<br/>"
+                            + "Start date: " + formattedDate + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
