@@ -27,12 +27,21 @@
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
-                L.geoJSON(data.features.filter(feature => feature.properties.agency === 'ab'), {  // Q2(a)- Only display fires originating in Alberta
+                L.geoJSON(data.features.filter(feature => feature.properties.agency === 'ab'), {  // Q2(a)- Only display fires originating in Alberta.
+                    
+                    //Q2(c) If the calculated hectares for a point are less than 1 or null, make the inside of the point transparent. If the calculated hectares are greater than 1000, make the inside of the circle opaque.
+                    
                     style: function (feature) {
-                        var options = {
-                            color: '#FF0000',
+                        var circleOpacity = 0.5; // Default fill opacity
+                        if (feature.properties.hectares < 1 || feature.properties.hectares == null) {
+                            circleOpacity = 0; // Make transparent
+                        } else if (feature.properties.hectares > 1000){
+                            circleOpacity = 1; // Make opaque
+                        }
+                        return {
+                            color: '#FF0000', // Red outline
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: circleOpacity
                         }
                         return options;
                     },
