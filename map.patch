@@ -1,4 +1,42 @@
 diff --git a/q2.html b/q2.html
+index b049c51..a0433f4 100644
+--- a/q2.html
++++ b/q2.html
+@@ -27,7 +27,7 @@
+         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
+             .then(response => response.json())
+             .then(data => {
+-                L.geoJSON(data.features, {
++                L.geoJSON(data.features.filter(feature => feature.properties.agency === 'ab'), {  // Q2(a)- Only display fires originating in Alberta
+                     style: function (feature) {
+                         var options = {
+                             color: '#FF0000',
+
+--
+
+diff --git a/q2.html b/q2.html
+index a0433f4..3883af8 100644
+--- a/q2.html
++++ b/q2.html
+@@ -36,8 +36,14 @@
+                         }
+                         return options;
+                     },
++                    //Q2(b) - Display the fire name, stage of control, and start date formatted like “Mar 3, 2024” when clicking on a fire
+                     onEachFeature: function (feature, layer) {
++                        var startDate = new Date(feature.properties.startdate);
++                        var formattedStartDate = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                         var popupContent = "<p>"
++                            + "Fire Name: " + (feature.properties.firename || "N/A") + "<br/>"
++                            + "Stage of Control: " + (feature.properties.stage_of_control || "N/A") + "<br/>"
++                            + "Start Date: " + formattedStartDate + "<br/>"
+                             + "Size: " + feature.properties.hectares + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
+
+--
+
+diff --git a/q2.html b/q2.html
 index 3883af8..4ea7a9f 100644
 --- a/q2.html
 +++ b/q2.html
@@ -28,3 +66,5 @@ index 3883af8..4ea7a9f 100644
                          }
                          return options;
                      },
+
+--
