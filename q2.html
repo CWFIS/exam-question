@@ -33,12 +33,22 @@
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
+                // step 3, the initail color is same for all fire
+                // we should chnge the fillopacity based on the hectares
                 L.geoJSON(data.features.filter(feature => feature.properties.agency === "ab"), {
                     style: function (feature) {
+                        var opacity;
+                        if (feature.properties.hectares<1 || feature.properties.hectares==null) {
+                            opacity = 0;
+                        } else if (feature.properties.hectares>1000){
+                            opacity = 1;
+                        } else {
+                            opacity = 0.5;
+                        }
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: opacity
                         }
                         return options;
                     },
