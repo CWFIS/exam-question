@@ -18,16 +18,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
     <script>
-        var map = L.map('mapid').setView([55, -113], 5);
+        var map = L.map('mapid').setView([55, -113], 5); // set the first view location
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         }).addTo(map);
+        // This is a Leaflet function to create a tile layer to a web map, 
+        // that cover the entire map and are loaded only for the visible portion and zoom level, 
+        // which makes the map efficient to load and navigate.
+ 
 
+        // from the link, we could see what are included in the dataset
+        // step1: from the dataset, I see that the agency related to the Provinece, we should set agency to be ab
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
-                L.geoJSON(data.features, {
+                L.geoJSON(data.features.filter(feature => feature.properties.agency === "ab"), {
                     style: function (feature) {
                         var options = {
                             color: '#FF0000',
