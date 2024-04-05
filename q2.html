@@ -38,6 +38,14 @@
                             weight: 2,
                             fillOpacity: 0.5
                         }
+                        // Set the fill opacity based on the fire size
+                        if (feature.properties.hectares === null || feature.properties.hectares < 1) {
+                            options.fillOpacity = 0; // Transparent for fires less than 1 hectare or null
+                        } else if (feature.properties.hectares >= 1000) {
+                            options.fillOpacity = 0.5; // Opaque for fires greater than 1000 hectares
+                        } else {
+                            options.fillOpacity = 0.5; // Semi-transparent for fires between 1 and 1000 hectares
+                        }
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
