@@ -28,6 +28,10 @@
             .then(response => response.json())
             .then(data => {
                 L.geoJSON(data.features, {
+                    filter: function (feature) {
+                        // Filter features within the bounding box of Alberta
+                        return feature.geometry.coordinates[0] >= -120 && feature.geometry.coordinates[0] <= -114 && feature.geometry.coordinates[1] >= 49 && feature.geometry.coordinates[1] <= 60;
+                    },
                     style: function (feature) {
                         var options = {
                             color: '#FF0000',
