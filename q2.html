@@ -39,17 +39,28 @@
                 return latitude >= 49 && latitude <= 60 && longitude >= -120 && longitude <= -110;
               });
 
-                L.geoJSON(albertaFires, {
+                L.geoJSON(albertaFires, {             
                     style: function (feature) {
-                        var options = {
+                var options = {
                             color: '#FF0000',
                             weight: 2,
                             fillOpacity: 0.5
                         }
+
+                    
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
+
+                        // Format start date as "Mar 3, 2024"
+                        const startDate = new Date(feature.properties.startdate);
+                        const formattedDate = startDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                        //Q2: Adding fields name, stage and start date
                         var popupContent = "<p>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start date: " + formattedDate + "<br/>"
                             + "Size: " + feature.properties.hectares + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
