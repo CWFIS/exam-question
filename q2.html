@@ -27,17 +27,51 @@
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
-                L.geoJSON(data.features, {
+
+
+                 // Q1: Filtering data to include only fires in Alberta
+                const albertaFires = data.features.filter(feature => {
+                const coordinates = feature.geometry.coordinates;
+                const latitude = coordinates[1];
+                const longitude = coordinates[0];
+
+                // Check if fire coordinates fall within Alberta's bounds
+                return latitude >= 49 && latitude <= 60 && longitude >= -120 && longitude <= -110;
+              });
+
+                L.geoJSON(albertaFires, {             
                     style: function (feature) {
+                        //adding hectares prop
+                        var hectares = feature.properties.hectares;
+
                         var options = {
                             color: '#FF0000',
                             weight: 2,
                             fillOpacity: 0.5
                         }
+
+                        // Q3: Adjusting fill opacity based on hectares
+                        if (hectares < 1 || hectares === null) {
+                                options.fillOpacity = 0; // Transparent fill
+                           } else if (hectares > 1000) {
+                                options.fillOpacity = 1; // Opaque fill
+                           } else {
+                                options.fillOpacity = 0.5; // Default fill opacity
+                         }
+
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
+
+                        // Format start date as "Mar 3, 2024"
+                        const startDate = new Date(feature.properties.startdate);
+                        const formattedDate = startDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                        //Q2: Adding fields name, stage and start date
                         var popupContent = "<p>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start date: " + formattedDate + "<br/>"
                             + "Size: " + feature.properties.hectares + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);

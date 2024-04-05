@@ -27,16 +27,33 @@
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
-                L.geoJSON(data.features, {
+
+                // Q1: Filtering data to include only fires in Alberta
+                const albertaFires = data.features.filter(feature => {
+                const coordinates = feature.geometry.coordinates;
+                const latitude = coordinates[1];
+                const longitude = coordinates[0];
+
+            // Check if fire coordinates fall within Alberta's bounds
+            return latitude >= 49 && latitude <= 60 && longitude >= -120 && longitude <= -110;
+        });
+
+                L.geoJSON(albertaFires, {
                     style: function (feature) {
+                        
+
                         var options = {
                             color: '#FF0000',
                             weight: 2,
                             fillOpacity: 0.5
                         }
+
+                         
+
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
+
                         var popupContent = "<p>"
                             + "Taille: " + feature.properties.hectares + "<br/>"
                             + "</p>";
