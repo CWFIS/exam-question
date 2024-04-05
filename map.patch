@@ -1,0 +1,188 @@
+From b01150a565672a0526b234f9f20b88f4ae0dbcf1 Mon Sep 17 00:00:00 2001
+From: ALINA-AS <144849942+AwaisAliShahid@users.noreply.github.com>
+Date: Fri, 5 Apr 2024 15:42:04 -0600
+Subject: [PATCH 1/3] Awais Submission
+
+Displaying fires in Alberta.
+---
+ q2.html | 28 +++-------------------------
+ 1 file changed, 3 insertions(+), 25 deletions(-)
+
+diff --git a/q2.html b/q2.html
+index 630faf1..6305cb9 100644
+--- a/q2.html
++++ b/q2.html
+@@ -24,7 +24,6 @@
+             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+         }).addTo(map);
+ 
+-        // Fetch GeoJSON data
+         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
+             .then(response => response.json())
+             .then(data => {
+@@ -32,7 +31,7 @@
+                 var albertaFires = data.features.filter(feature => {
+                     // Assuming Alberta's boundary is between latitudes 49.0 and 60.0 and longitudes -120.0 and -110.0
+                     return feature.geometry.coordinates[1] >= 49.0 && feature.geometry.coordinates[1] <= 60.0 &&
+-                        feature.geometry.coordinates[0] >= -120.0 && feature.geometry.coordinates[0] <= -110.0;
++                           feature.geometry.coordinates[0] >= -120.0 && feature.geometry.coordinates[0] <= -110.0;
+                 });
+ 
+                 L.geoJSON(albertaFires, {
+@@ -45,29 +44,8 @@
+                         return options;
+                     },
+                     onEachFeature: function (feature, layer) {
+-                        // Extract fire information from properties
+-                        var fireName = feature.properties.firename ? feature.properties.firename : "Unknown";
+-                        var stageOfControl = feature.properties.stage_of_control ? feature.properties.stage_of_control : "Unknown";
+-                        var startDate = feature.properties.startdate ? new Date(feature.properties.startdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown";
+-
+-                        // Create popup content
+-                        var popupContent = "<p>"
+-                            + "Fire Name: " + fireName + "<br/>"
+-                            + "Stage of Control: " + stageOfControl + "<br/>"
+-                            + "Start Date: " + startDate + "<br/>"
+-                            + "</p>";
+-
+-                        // Bind popup to layer (marker)
++                        var popupContent = "<p>Active Fire</p>";
+                         layer.bindPopup(popupContent);
+-                        
+-                        // Add event listener to show popup on hover
+-                        layer.on('mouseover', function (e) {
+-                            layer.openPopup();
+-                        });
+-
+-                        layer.on('mouseout', function (e) {
+-                            layer.closePopup();
+-                        });
+                     },
+                     pointToLayer: function (feature, latlng) {
+                         return L.circleMarker(latlng);
+@@ -77,4 +55,4 @@
+     </script>
+ </body>
+ 
+-</html>
+\ No newline at end of file
++</html>
+-- 
+2.43.0.windows.1
+
+
+From b299d62ae23c96b133f7147f5f9113ceec11285f Mon Sep 17 00:00:00 2001
+From: ALINA-AS <144849942+AwaisAliShahid@users.noreply.github.com>
+Date: Fri, 5 Apr 2024 15:54:40 -0600
+Subject: [PATCH 2/3] Part2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Displaying the fire name, stage of control, and start date formatted like “Mar 3, 2024” when clicking on a fire.
+---
+ q2.html | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/q2.html b/q2.html
+index 6305cb9..630faf1 100644
+--- a/q2.html
++++ b/q2.html
+@@ -24,6 +24,7 @@
+             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+         }).addTo(map);
+ 
++        // Fetch GeoJSON data
+         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
+             .then(response => response.json())
+             .then(data => {
+@@ -31,7 +32,7 @@
+                 var albertaFires = data.features.filter(feature => {
+                     // Assuming Alberta's boundary is between latitudes 49.0 and 60.0 and longitudes -120.0 and -110.0
+                     return feature.geometry.coordinates[1] >= 49.0 && feature.geometry.coordinates[1] <= 60.0 &&
+-                           feature.geometry.coordinates[0] >= -120.0 && feature.geometry.coordinates[0] <= -110.0;
++                        feature.geometry.coordinates[0] >= -120.0 && feature.geometry.coordinates[0] <= -110.0;
+                 });
+ 
+                 L.geoJSON(albertaFires, {
+@@ -44,8 +45,29 @@
+                         return options;
+                     },
+                     onEachFeature: function (feature, layer) {
+-                        var popupContent = "<p>Active Fire</p>";
++                        // Extract fire information from properties
++                        var fireName = feature.properties.firename ? feature.properties.firename : "Unknown";
++                        var stageOfControl = feature.properties.stage_of_control ? feature.properties.stage_of_control : "Unknown";
++                        var startDate = feature.properties.startdate ? new Date(feature.properties.startdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Unknown";
++
++                        // Create popup content
++                        var popupContent = "<p>"
++                            + "Fire Name: " + fireName + "<br/>"
++                            + "Stage of Control: " + stageOfControl + "<br/>"
++                            + "Start Date: " + startDate + "<br/>"
++                            + "</p>";
++
++                        // Bind popup to layer (marker)
+                         layer.bindPopup(popupContent);
++                        
++                        // Add event listener to show popup on hover
++                        layer.on('mouseover', function (e) {
++                            layer.openPopup();
++                        });
++
++                        layer.on('mouseout', function (e) {
++                            layer.closePopup();
++                        });
+                     },
+                     pointToLayer: function (feature, latlng) {
+                         return L.circleMarker(latlng);
+@@ -55,4 +77,4 @@
+     </script>
+ </body>
+ 
+-</html>
++</html>
+\ No newline at end of file
+-- 
+2.43.0.windows.1
+
+
+From 893b89cad716b8044e54fbdf5fdfb964fa765427 Mon Sep 17 00:00:00 2001
+From: ALINA-AS <144849942+AwaisAliShahid@users.noreply.github.com>
+Date: Fri, 5 Apr 2024 15:57:53 -0600
+Subject: [PATCH 3/3] Part3
+
+If the calculated hectares for a point are less than 1 or null, make the inside of the point transparent. If the calculated hectares are greater than 1000, make the inside of the circle
+opaque.
+---
+ q2.html | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/q2.html b/q2.html
+index 630faf1..fa75661 100644
+--- a/q2.html
++++ b/q2.html
+@@ -37,10 +37,19 @@
+ 
+                 L.geoJSON(albertaFires, {
+                     style: function (feature) {
++                        var hectares = feature.properties.hectares;
++                        var opacity = 0.5; // Default opacity
++
++                        if (hectares !== null && hectares < 1) {
++                            opacity = 0; // Transparent if less than 1 or null
++                        } else if (hectares > 1000) {
++                            opacity = 1; // Opaque if greater than 1000
++                        }
++
+                         var options = {
+                             color: '#FF0000',
+                             weight: 2,
+-                            fillOpacity: 0.5
++                            fillOpacity: opacity // Set fill opacity based on calculated hectares
+                         }
+                         return options;
+                     },
+-- 
+2.43.0.windows.1
+
