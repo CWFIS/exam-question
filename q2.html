@@ -36,9 +36,16 @@
                         }
                         return options;
                     },
+
+                    //Display the fire name, stage of control, and start date
+                    //formatted like “Mar 3, 2024” when clicking on a fire.
                     onEachFeature: function (feature, layer) {
+                        var startDate = new Date(feature.properties.startdate);
+                        var formattedStartDate = startDate.toLocaleString('en-us', { month: 'short', day: '2-digit', year: 'numeric' });
                         var popupContent = "<p>"
-                            + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + formattedStartDate + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
