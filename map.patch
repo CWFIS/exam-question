@@ -1,0 +1,37 @@
+diff --git a/q2.html b/q2.html
+index b049c51..5476fcd 100644
+--- a/q2.html
++++ b/q2.html
+@@ -27,17 +27,27 @@
+         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
+             .then(response => response.json())
+             .then(data => {
+-                L.geoJSON(data.features, {
++                L.geoJSON(data.features.filter(feature => feature.properties.agency === 'ab'), {
+                     style: function (feature) {
+-                        var options = {
+-                            color: '#FF0000',
++                        var opacityOfCircle = 0.5; 
++                        if (feature.properties.hectares < 1 || feature.properties.hectares == null) {
++                            opacityOfCircle = 0; 
++                        } else if (feature.properties.hectares > 1000){
++                            opacityOfCircle = 1; 
++                        }
++                        return {
++                            color: '#FF0000', 
+                             weight: 2,
+-                            fillOpacity: 0.5
++                            fillOpacity: opacityOfCircle
+                         }
+-                        return options;
+                     },
+                     onEachFeature: function (feature, layer) {
++                        var unformatStartDate = new Date(feature.properties.startdate);
++                        var formatStartDate = unformatStartDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                         var popupContent = "<p>"
++                            + "fire name: " + (feature.properties.firename || "Not found") + "<br/>"
++                            + "stage of control: " + (feature.properties.stage_of_control || "Not found") + "<br/>"
++                            + "start date: " + formatStartDate + "<br/>"
+                             + "Size: " + feature.properties.hectares + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
