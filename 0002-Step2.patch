@@ -1,0 +1,34 @@
+From 012e55b4ce46e8e9deb86142ea8b660c73787cf8 Mon Sep 17 00:00:00 2001
+From: SophieSun00175 <sun00175@algonquinlive.com>
+Date: Fri, 5 Apr 2024 11:48:35 -0400
+Subject: [PATCH 2/3] Step2.
+
+---
+ q2.html | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/q2.html b/q2.html
+index bab76e8..f28221e 100644
+--- a/q2.html
++++ b/q2.html
+@@ -36,9 +36,16 @@
+                         }
+                         return options;
+                     },
++
++                    //Display the fire name, stage of control, and start date
++                    //formatted like “Mar 3, 2024” when clicking on a fire.
+                     onEachFeature: function (feature, layer) {
++                        var startDate = new Date(feature.properties.startdate);
++                        var formattedStartDate = startDate.toLocaleString('en-us', { month: 'short', day: '2-digit', year: 'numeric' });
+                         var popupContent = "<p>"
+-                            + "Size: " + feature.properties.hectares + "<br/>"
++                            + "Fire Name: " + feature.properties.firename + "<br/>"
++                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
++                            + "Start Date: " + formattedStartDate + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
+                     },
+-- 
+2.31.1.windows.1
+

@@ -29,18 +29,39 @@
             .then(data => {
                 L.geoJSON(data.features, {
                     style: function (feature) {
+                      //the third changes to change the color based on hectares
+                      var hectares = feature.properties.hectares;
+                      var fillOpacity = 0.5;
+
+                      if (hectares < 1 || hectares === null) {
+                        fillOpacity = 0;
+                      } else if (hectares > 1000) {
+                        fillOpacity = 1;
+                      }
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: fillOpacity
                         }
                         return options;
                     },
+
+                    //Display the fire name, stage of control, and start date
+                    //formatted like “Mar 3, 2024” when clicking on a fire.
                     onEachFeature: function (feature, layer) {
+                        var startDate = new Date(feature.properties.startdate);
+                        var formattedStartDate = startDate.toLocaleString('en-us', { month: 'short', day: '2-digit', year: 'numeric' });
                         var popupContent = "<p>"
-                            + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + formattedStartDate + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
+                    },
+
+                    // Only display fires originating in Alberta
+                    filter: function (feature) {
+                        return feature.properties.agency.toLowerCase() === 'ab';
                     },
                     pointToLayer: function (feature, latlng) {
                         return L.circleMarker(latlng);

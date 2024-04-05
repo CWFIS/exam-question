@@ -1,0 +1,37 @@
+From 2b0d8ffe2ac97a854656b23a40aa5278ee806b7f Mon Sep 17 00:00:00 2001
+From: SophieSun00175 <sun00175@algonquinlive.com>
+Date: Fri, 5 Apr 2024 11:50:55 -0400
+Subject: [PATCH 3/3] Step3.
+
+---
+ q2.html | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/q2.html b/q2.html
+index f28221e..380c1ea 100644
+--- a/q2.html
++++ b/q2.html
+@@ -29,10 +29,19 @@
+             .then(data => {
+                 L.geoJSON(data.features, {
+                     style: function (feature) {
++                      //the third changes to change the color based on hectares
++                      var hectares = feature.properties.hectares;
++                      var fillOpacity = 0.5;
++
++                      if (hectares < 1 || hectares === null) {
++                        fillOpacity = 0;
++                      } else if (hectares > 1000) {
++                        fillOpacity = 1;
++                      }
+                         var options = {
+                             color: '#FF0000',
+                             weight: 2,
+-                            fillOpacity: 0.5
++                            fillOpacity: fillOpacity
+                         }
+                         return options;
+                     },
+-- 
+2.31.1.windows.1
+
