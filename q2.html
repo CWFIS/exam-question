@@ -37,10 +37,19 @@
 
                 L.geoJSON(albertaFires, {
                     style: function (feature) {
+                        var hectares = feature.properties.hectares;
+                        var opacity = 0.5; // Default opacity
+
+                        if (hectares !== null && hectares < 1) {
+                            opacity = 0; // Transparent if less than 1 or null
+                        } else if (hectares > 1000) {
+                            opacity = 1; // Opaque if greater than 1000
+                        }
+
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: opacity // Set fill opacity based on calculated hectares
                         }
                         return options;
                     },
