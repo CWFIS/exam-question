@@ -29,12 +29,17 @@
             .then(data => {
                 L.geoJSON(data.features.filter(feature => feature.properties.agency === 'ab'), {
                     style: function (feature) {
-                        var options = {
-                            color: '#FF0000',
-                            weight: 2,
-                            fillOpacity: 0.5
+                        var opacityOfCircle = 0.5; 
+                        if (feature.properties.hectares < 1 || feature.properties.hectares == null) {
+                            opacityOfCircle = 0; 
+                        } else if (feature.properties.hectares > 1000){
+                            opacityOfCircle = 1; 
                         }
-                        return options;
+                        return {
+                            color: '#FF0000', 
+                            weight: 2,
+                            fillOpacity: opacityOfCircle
+                        }
                     },
                     onEachFeature: function (feature, layer) {
                         var unformatStartDate = new Date(feature.properties.startdate);
