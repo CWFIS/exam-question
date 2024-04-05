@@ -41,13 +41,24 @@
 
                 L.geoJSON(albertaFires, {             
                     style: function (feature) {
-                var options = {
+                        //adding hectares prop
+                        var hectares = feature.properties.hectares;
+
+                        var options = {
                             color: '#FF0000',
                             weight: 2,
                             fillOpacity: 0.5
                         }
 
-                    
+                        // Q3: Adjusting fill opacity based on hectares
+                        if (hectares < 1 || hectares === null) {
+                                options.fillOpacity = 0; // Transparent fill
+                           } else if (hectares > 1000) {
+                                options.fillOpacity = 1; // Opaque fill
+                           } else {
+                                options.fillOpacity = 0.5; // Default fill opacity
+                         }
+
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
