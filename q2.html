@@ -41,8 +41,16 @@
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
+                        var dateString = feature.properties.startdate;
+                        var date = new Date(dateString);
+                        var options = { month: 'short', day: '2-digit', year: 'numeric' };
+                        var formattedDate = date.toLocaleDateString('en-CA', options)
+                        
                         var popupContent = "<p>"
                             + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + formattedDate + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
