@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Alberta Active Fires</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css" />
+    <style>
+        #mapid {
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mapid"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+    <script>
+        var map = L.map('mapid').setView([55, -113], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data.features, {
+                    style: function (feature) {
+                        var options = {
+                            color: '#FF0000',
+                            weight: 2
+                        };
+                        // Adjust fillOpacity based on hectares
+                        if (feature.properties.hectares < 1 || feature.properties.hectares === null) {
+                            options.fillOpacity = 0; // Transparent
+                        } else if (feature.properties.hectares > 1000) {
+                            options.fillOpacity = 1; // Opaque
+                        } else {
+                            options.fillOpacity = 0.5; // Semi-transparent
+                        }
+                        return options;
+                    },
+                    filter: function (feature) {
+                        // Filter out fires not originating in Alberta
+                        return feature.properties.province === 'AB';
+                    },
+                    onEachFeature: function (feature, layer) {
+                        // Format start date
+                        var startDate = new Date(feature.properties.start_date);
+                        var formattedStartDate = startDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                        // Create popup content
+                        var popupContent = "<p>"
+                            + "Fire Name: " + feature.properties.name + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + formattedStartDate + "<br/>"
+                            + "</p>";
+                        layer.bindPopup(popupContent);
+                    },
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng);
+                    }
+                }).addTo(map);
+            });
+    </script>
+</body>
+
+</html>
