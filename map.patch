@@ -1,0 +1,98 @@
+From 90d34683b7213587c84bb6ba0d0d99a117d54199 Mon Sep 17 00:00:00 2001
+From: Navitha Ravilla <navitharavilla45@gmail.com>
+Date: Fri, 5 Apr 2024 10:41:36 -0400
+Subject: [PATCH 1/3] Only display fires originating in Alberta
+
+---
+ q2.html | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/q2.html b/q2.html
+index b049c51..f4d33f7 100644
+--- a/q2.html
++++ b/q2.html
+@@ -28,6 +28,10 @@
+             .then(response => response.json())
+             .then(data => {
+                 L.geoJSON(data.features, {
++                    filter: function (feature) {
++                        // Filter features within the bounding box of Alberta
++                        return feature.geometry.coordinates[0] >= -120 && feature.geometry.coordinates[0] <= -114 && feature.geometry.coordinates[1] >= 49 && feature.geometry.coordinates[1] <= 60;
++                    },
+                     style: function (feature) {
+                         var options = {
+                             color: '#FF0000',
+-- 
+2.44.0.windows.1
+
+From 2def19ed5e730307102fa3b3171bd0e6bfe16840 Mon Sep 17 00:00:00 2001
+From: Navitha Ravilla <navitharavilla45@gmail.com>
+Date: Fri, 5 Apr 2024 10:44:45 -0400
+Subject: [PATCH 2/3] =?UTF-8?q?Display=20the=20fire=20name,=20stage=20of?=
+ =?UTF-8?q?=20control,=20and=20start=20date=20formatted=20like=20=E2=80=9C?=
+ =?UTF-8?q?Mar=203,=202024=E2=80=9D=20when=20clicking=20on=20a=20fire?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ q2.html | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/q2.html b/q2.html
+index f4d33f7..11566f5 100644
+--- a/q2.html
++++ b/q2.html
+@@ -41,8 +41,16 @@
+                         return options;
+                     },
+                     onEachFeature: function (feature, layer) {
++                        var dateString = feature.properties.startdate;
++                        var date = new Date(dateString);
++                        var options = { month: 'short', day: '2-digit', year: 'numeric' };
++                        var formattedDate = date.toLocaleDateString('en-CA', options)
++                        
+                         var popupContent = "<p>"
+                             + "Size: " + feature.properties.hectares + "<br/>"
++                            + "Fire Name: " + feature.properties.firename + "<br/>"
++                            + "Stage of control: " + feature.properties.stage_of_control + "<br/>"
++                            + "Start Date: " + formattedDate + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
+                     },
+-- 
+2.44.0.windows.1
+
+From f729c2dac0491111bea75ec0b1265dc5095409bb Mon Sep 17 00:00:00 2001
+From: Navitha Ravilla <navitharavilla45@gmail.com>
+Date: Fri, 5 Apr 2024 10:47:01 -0400
+Subject: [PATCH 3/3] If the calculated hectares for a point are less than 1 or
+ null, make the inside of the point transparent. If the calculated hectares
+ are greater than 1000, make the inside of the circle opaque
+
+---
+ q2.html | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/q2.html b/q2.html
+index 11566f5..953610e 100644
+--- a/q2.html
++++ b/q2.html
+@@ -38,6 +38,14 @@
+                             weight: 2,
+                             fillOpacity: 0.5
+                         }
++                        // Set the fill opacity based on the fire size
++                        if (feature.properties.hectares === null || feature.properties.hectares < 1) {
++                            options.fillOpacity = 0; // Transparent for fires less than 1 hectare or null
++                        } else if (feature.properties.hectares >= 1000) {
++                            options.fillOpacity = 0.5; // Opaque for fires greater than 1000 hectares
++                        } else {
++                            options.fillOpacity = 0.5; // Semi-transparent for fires between 1 and 1000 hectares
++                        }
+                         return options;
+                     },
+                     onEachFeature: function (feature, layer) {
+-- 
+2.44.0.windows.1
+
