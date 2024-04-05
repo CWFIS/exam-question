@@ -29,10 +29,19 @@
             .then(data => {
                 L.geoJSON(data.features, {
                     style: function (feature) {
+                      //the third changes to change the color based on hectares
+                      var hectares = feature.properties.hectares;
+                      var fillOpacity = 0.5;
+
+                      if (hectares < 1 || hectares === null) {
+                        fillOpacity = 0;
+                      } else if (hectares > 1000) {
+                        fillOpacity = 1;
+                      }
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: fillOpacity
                         }
                         return options;
                     },
