@@ -1,0 +1,25 @@
+From 650f050d894734a765d713d90627971e15242b50 Mon Sep 17 00:00:00 2001
+From: William Lowell Ramos <williamlowellramos@gmail.com>
+Date: Fri, 5 Apr 2024 18:33:54 -0600
+Subject: [PATCH 3/3] Adjust styling based on calculated hectares
+
+---
+ q2.html | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/q2.html b/q2.html
+index 2c624a8..86c17c7 100644
+--- a/q2.html
++++ b/q2.html
+@@ -32,7 +32,7 @@
+                         var options = {
+                             color: '#FF0000',
+                             weight: 2,
+-                            fillOpacity: 0.5
++                            fillOpacity: (feature.properties.hectares > 1000 ? 1 : (feature.properties.hectares < 1 || feature.properties.hectares == null ? 0 : 0.5))
+                         }
+                         return options;
+                     },
+-- 
+2.43.0.windows.1
+

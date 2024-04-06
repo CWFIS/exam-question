@@ -1,0 +1,30 @@
+From 6e4fa4f7451dce46927156b7bbc0412fb297fc01 Mon Sep 17 00:00:00 2001
+From: William Lowell Ramos <williamlowellramos@gmail.com>
+Date: Fri, 5 Apr 2024 18:33:29 -0600
+Subject: [PATCH 2/3] Display fire name, stage of control, and start date in
+ popup
+
+---
+ q2.html | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/q2.html b/q2.html
+index 60e3265..2c624a8 100644
+--- a/q2.html
++++ b/q2.html
+@@ -37,7 +37,12 @@
+                         return options;
+                     },
+                     onEachFeature: function (feature, layer) {
++                        var fireName = feature.properties.firename || "Unknown";
++                        var startDate = feature.properties.startdate ? new Date(feature.properties.startdate).toLocaleDateString("en-US", {year: 'numeric', month: 'short', day: 'numeric'}) : "Unknown";
+                         var popupContent = "<p>"
++                            + "Fire Name: " + fireName + "<br/>"
++                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
++                            + "Start Date: " + startDate + "<br/>"
+                             + "Size: " + feature.properties.hectares + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
+-- 
+2.43.0.windows.1
+

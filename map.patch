@@ -1,0 +1,80 @@
+From dc8fc09695af84426008f43b07a855627a95d9ee Mon Sep 17 00:00:00 2001
+From: William Lowell Ramos <williamlowellramos@gmail.com>
+Date: Fri, 5 Apr 2024 18:32:57 -0600
+Subject: [PATCH 1/3] Display fires originating in Alberta
+
+---
+ q2.html | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/q2.html b/q2.html
+index b049c51..60e3265 100644
+--- a/q2.html
++++ b/q2.html
+@@ -24,7 +24,7 @@
+             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+         }).addTo(map);
+ 
+-        fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
++        fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json&StateOrProvince=AB')
+             .then(response => response.json())
+             .then(data => {
+                 L.geoJSON(data.features, {
+-- 
+2.43.0.windows.1
+
+From 6e4fa4f7451dce46927156b7bbc0412fb297fc01 Mon Sep 17 00:00:00 2001
+From: William Lowell Ramos <williamlowellramos@gmail.com>
+Date: Fri, 5 Apr 2024 18:33:29 -0600
+Subject: [PATCH 2/3] Display fire name, stage of control, and start date in
+ popup
+
+---
+ q2.html | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/q2.html b/q2.html
+index 60e3265..2c624a8 100644
+--- a/q2.html
++++ b/q2.html
+@@ -37,7 +37,12 @@
+                         return options;
+                     },
+                     onEachFeature: function (feature, layer) {
++                        var fireName = feature.properties.firename || "Unknown";
++                        var startDate = feature.properties.startdate ? new Date(feature.properties.startdate).toLocaleDateString("en-US", {year: 'numeric', month: 'short', day: 'numeric'}) : "Unknown";
+                         var popupContent = "<p>"
++                            + "Fire Name: " + fireName + "<br/>"
++                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
++                            + "Start Date: " + startDate + "<br/>"
+                             + "Size: " + feature.properties.hectares + "<br/>"
+                             + "</p>";
+                         layer.bindPopup(popupContent);
+-- 
+2.43.0.windows.1
+
+From 650f050d894734a765d713d90627971e15242b50 Mon Sep 17 00:00:00 2001
+From: William Lowell Ramos <williamlowellramos@gmail.com>
+Date: Fri, 5 Apr 2024 18:33:54 -0600
+Subject: [PATCH 3/3] Adjust styling based on calculated hectares
+
+---
+ q2.html | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/q2.html b/q2.html
+index 2c624a8..86c17c7 100644
+--- a/q2.html
++++ b/q2.html
+@@ -32,7 +32,7 @@
+                         var options = {
+                             color: '#FF0000',
+                             weight: 2,
+-                            fillOpacity: 0.5
++                            fillOpacity: (feature.properties.hectares > 1000 ? 1 : (feature.properties.hectares < 1 || feature.properties.hectares == null ? 0 : 0.5))
+                         }
+                         return options;
+                     },
+-- 
+2.43.0.windows.1
+
