@@ -32,7 +32,7 @@
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: (feature.properties.hectares > 1000 ? 1 : (feature.properties.hectares < 1 || feature.properties.hectares == null ? 0 : 0.5))
                         }
                         return options;
                     },
