@@ -27,21 +27,33 @@
         fetch('https://cwfis.cfs.nrcan.gc.ca/geoserver/public/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=public:activefires_current&srsname=EPSG:4326&outputFormat=json')
             .then(response => response.json())
             .then(data => {
+
+                data.features.forEach((element, index) => {
+
+                    data.features = data.features.filter(feature => feature.properties.lat < 60.00 && feature.properties.lat > 48.99 && feature.properties.lon > -120.00 && feature.properties.lon < -109.99);
+
+                })
+
                 L.geoJSON(data.features, {
                     style: function (feature) {
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: 0.5
+                            fillOpacity: (feature.properties.hectares < 1 || feature.properties.hectares == null) ? 0 : ((feature.properties.hectares > 1000) ? 1 : 0.5)
+
                         }
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
+                        const startdate = new Date(feature.properties.startdate);
                         var popupContent = "<p>"
-                            + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + startdate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
+
                     pointToLayer: function (feature, latlng) {
                         return L.circleMarker(latlng);
                     }
