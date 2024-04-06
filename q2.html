@@ -37,7 +37,12 @@
                         return options;
                     },
                     onEachFeature: function (feature, layer) {
+                        var fireName = feature.properties.firename || "Unknown";
+                        var startDate = feature.properties.startdate ? new Date(feature.properties.startdate).toLocaleDateString("en-US", {year: 'numeric', month: 'short', day: 'numeric'}) : "Unknown";
                         var popupContent = "<p>"
+                            + "Fire Name: " + fireName + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + startDate + "<br/>"
                             + "Size: " + feature.properties.hectares + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
