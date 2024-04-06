@@ -43,12 +43,16 @@
                         }
                         return options;
                     },
-                    onEachFeature: function (feature, layer) {
+                   onEachFeature: function (feature, layer) {
+                        const startdate = new Date(feature.properties.startdate);
                         var popupContent = "<p>"
-                            + "Size: " + feature.properties.hectares + "<br/>"
+                            + "Fire Name: " + feature.properties.firename + "<br/>"
+                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
+                            + "Start Date: " + startdate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
+
                     pointToLayer: function (feature, latlng) {
                         return L.circleMarker(latlng);
                     }
