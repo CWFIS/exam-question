@@ -39,21 +39,16 @@
                         var options = {
                             color: '#FF0000',
                             weight: 2,
-                            fillOpacity: (feature.properties.hectares < 1 || feature.properties.hectares == null) ? 0 : ((feature.properties.hectares > 1000) ? 1 : 0.5)
-
+                            fillOpacity: 0.5
                         }
                         return options;
                     },
-                   onEachFeature: function (feature, layer) {
-                        const startdate = new Date(feature.properties.startdate);
+                    onEachFeature: function (feature, layer) {
                         var popupContent = "<p>"
-                            + "Fire Name: " + feature.properties.firename + "<br/>"
-                            + "Stage of Control: " + feature.properties.stage_of_control + "<br/>"
-                            + "Start Date: " + startdate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + "<br/>"
+                            + "Size: " + feature.properties.hectares + "<br/>"
                             + "</p>";
                         layer.bindPopup(popupContent);
                     },
-
                     pointToLayer: function (feature, latlng) {
                         return L.circleMarker(latlng);
                     }
